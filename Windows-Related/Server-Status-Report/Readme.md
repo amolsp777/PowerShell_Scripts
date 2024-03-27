@@ -1,7 +1,5 @@
 # Server-Status-Report
 
-# <Tital>
-
 ## Overview
 
 ### Purpose
