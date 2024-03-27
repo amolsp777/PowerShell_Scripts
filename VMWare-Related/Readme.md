@@ -1,7 +1,8 @@
 # Example Template
 
-# <Tital>
+# VMWare Related
 
+This place is for all VMware related PowerShell/PowerCLI scripts.
 ## Overview
 
 ### Purpose
