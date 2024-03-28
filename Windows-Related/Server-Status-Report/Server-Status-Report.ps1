@@ -153,7 +153,6 @@ $WSAServers = Get-ADComputer -filter {( name -like "*") -and ( OperatingSystem -
 Write-Host "Servers are in AD - " $WSAServers.count
 $ObjectCount = $WSAServers.count
 
-
 $CompS = $WSAServers.name #| select -First 5
 
 $InventoryBlock = {
@@ -162,8 +161,7 @@ $InventoryBlock = {
 		[Parameter(Mandatory = $false)]
 		[string[]]$ComputerName #= $env:COMPUTERNAME  
 	)
-	
-	
+		
 	# $ErrorActionPreference = "SilentlyContinue"
 	
 	#region Simple Add-WriteHost Function
