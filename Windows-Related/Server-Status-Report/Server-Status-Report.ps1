@@ -41,7 +41,7 @@ $SCRIPT_PARENT = $PSScriptRoot
 #endregion
 #
 
-$date = $(Get-Date -Format "yyyy-MM-dd-HHmm")
+#$date = $(Get-Date -Format "yyyy-MM-dd-HHmm")
 
 
 #region Check if the Reports folder exists, and create it if not. And delete .HTML & .CSV files older than 60 days
@@ -74,7 +74,7 @@ else {
 
 $ErrorActionPreference = "SilentlyContinue"
 
-Function Do-WriteHost {
+Function Add-WriteHost {
 	[CmdletBinding()]
 	Param
 	(
@@ -128,13 +128,13 @@ Function Do-WriteHost {
 }
 
 
-Do-WriteHost "[Start] Job Started" -Color Yellow
+Add-WriteHost "[Start] Job Started" -Color Yellow
 
 #region Script Path output  and Set the location on SystemDrive
-$Date = Get-Date -Format "MMM-dd-yyyy"
+# $Date = Get-Date -Format "MMM-dd-yyyy"
 $ScriptPath = (Split-Path -Path ((Get-Variable -Name MyInvocation).Value).MyCommand.Path)
-$Mainpath = $ScriptPath #"E:\UserPassChng_Log"
-$ScriptName = (($MyInvocation.MyCommand.Name) -replace (".ps1", ""))
+#$Mainpath = $ScriptPath #"E:\UserPassChng_Log"
+#$ScriptName = (($MyInvocation.MyCommand.Name) -replace (".ps1", ""))
 
 
 $sysDrive = $env:SystemDrive + "\"
@@ -166,14 +166,14 @@ $InventoryBlock = {
 	
 	# $ErrorActionPreference = "SilentlyContinue"
 	
-	#region Simple Do-WriteHost Function
+	#region Simple Add-WriteHost Function
 	# It will write notmal time based logs on the screen
 	
 	$i++
 	
 	$logpath = $("\\asdwsa002\p$\_Scripts\Server-Status-Report\Reports\Log_$((Get-Date -Format 'yyyyMMdd').ToString()).log")
 	#$logpath = ($reportsFolderPath + "\_Log_$((Get-Date -Format 'yyyyMMdd').ToString()).log")
-	Function Do-WriteHost {
+	Function Add-WriteHost {
 		[CmdletBinding()]
 		Param
 		(
@@ -238,7 +238,7 @@ $InventoryBlock = {
 	
 	
 	#endregion 
-	#Do-WriteHost "[$ADcompName]-----------------S>"
+	#Add-WriteHost "[$ADcompName]-----------------S>"
 	$ADcompName = "$($ComputerName)"
 	
 	Import-Module ActiveDirectory
@@ -306,7 +306,7 @@ $InventoryBlock = {
 	$DataUpdateTime = Get-Date -Format "MM/dd/yyyy HH:mm"
 	
 	If (($pingStatus.StatusCode -eq 0) -and ($TTLOS -ge 100 -and $TTLOS -le 128 -or $TTLOS -le 0)) {
-		#Do-WriteHost "[$ADcompName]- Checking OS & Hotfix Details"
+		#Add-WriteHost "[$ADcompName]- Checking OS & Hotfix Details"
 		$CPUInfoCount = Get-WmiObject -Class Win32_ComputerSystem -ComputerName $ComputerName
 		If (($CPUInfoCount.Manufacturer -like "VM*") -or ($CPUInfoCount.Manufacturer -like "Microsoft*")) {
 			$phyvm = "Virtual"
@@ -343,7 +343,7 @@ $InventoryBlock = {
 		
 		
 		#region C Disk details.
-		#Do-WriteHost "[$ADcompName]- Checking Disk Details"
+		#Add-WriteHost "[$ADcompName]- Checking Disk Details"
 		$DiskInfo = Get-WmiObject -Class Win32_LogicalDisk -ComputerName $ComputerName | where { $_.DeviceID -like "C:" } |
 		Select-Object -Property DeviceID, VolumeName, @{ Label = 'FreeSpace (Gb)'; expression = { ($_.FreeSpace / 1GB).ToString('F2') } },
 		@{ Label = 'Total (Gb)'; expression = { ($_.Size / 1GB).ToString('F2') } },
@@ -360,7 +360,7 @@ $InventoryBlock = {
 		#endregion
 		
 		#region Check ManageEngine UEMS - Agent
-		#Do-WriteHost "[$ADcompName]- Checking Services"
+		#Add-WriteHost "[$ADcompName]- Checking Services"
 		try {
 			$ManageEngineService = Get-Service -ComputerName $computername -Name 'ManageEngine UEMS - Agent' # | select Status
 			If ($ManageEngineService -ne $null) {
@@ -430,14 +430,14 @@ $InventoryBlock = {
 		#$infoObject #Output to the screen for a visual feedback.
 		$infoColl += $infoObject
 		#}
-		#Do-WriteHost "[$ADcompName]-----Output-Loading-----"
+		#Add-WriteHost "[$ADcompName]-----Output-Loading-----"
 		
 	}
 	
 	
 	else {
 		Write-Host "Server not reachable - $($ComputerName)"
-		#Do-WriteHost "[$ADcompName]- Server not reachable"
+		#Add-WriteHost "[$ADcompName]- Server not reachable"
 		$infoObject = New-Object PSObject
 		#The following add data to the infoObjects.	
 		Add-Member -inputObject $infoObject -memberType NoteProperty -name "ServerName" -value $sysname
@@ -483,7 +483,7 @@ $InventoryBlock = {
 	$infoColl
 }
 
-Do-WriteHost "[Objects] Total Devices to check - $count"
+Add-WriteHost "[Objects] Total Devices to check - $count"
 
 
 $i = 0
@@ -554,7 +554,7 @@ $outputCSV = ($reportsFolderPath + "\JOBs-Server_Inventory_$((Get-Date).ToString
 
 $Data | select * -ExcludeProperty RunspaceId, PSComputerName, PSShowComputerName | Export-Csv -path $outputCSV -NoTypeInformation
 
-Do-WriteHost "Output file saved at path - $ScriptPath"
+Add-WriteHost "Output file saved at path - $ScriptPath"
 
 $importCSVData = Import-Csv $outputCSV
 $outputfileHTML = ($reportsFolderPath + "\Server_UPTime_$((Get-Date).ToString('MM-dd-yyyy')).html")
@@ -785,8 +785,8 @@ $MainElapsedTimeOut = [Math]::Round(($MainElapsedTime.TotalMinutes), 3)
 
 "[Total Elapsed Time] $MainElapsedTimeOut Min. for Objects [$($ObjectCount)]" | Out-File ($SCRIPT_PARENT + "\JobStatus_$((Get-Date).ToString('MM-dd-yyyy')).txt") -Append
 "/\____________________________________________________/\" | Out-File ($SCRIPT_PARENT + "\JobStatus_$((Get-Date).ToString('MM-dd-yyyy')).txt") -Append
-Do-WriteHost "[Total Elapsed Time] $MainElapsedTimeOut Min. for Objects [$($ObjectCount)]"
-Do-WriteHost "[END] Job End" -Color Yellow
+Add-WriteHost "[Total Elapsed Time] $MainElapsedTimeOut Min. for Objects [$($ObjectCount)]"
+Add-WriteHost "[END] Job End" -Color Yellow
 
 <# ------- Commented
 
