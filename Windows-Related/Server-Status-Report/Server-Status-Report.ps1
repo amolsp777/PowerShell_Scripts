@@ -149,7 +149,7 @@ If (!(test-path $ScriptOutputPath)) { New-Item -ItemType Directory -Force -Path 
 # $ObjectCount = $WSAServers.count
 
 # Get the Windows server list from the WSA-ALL-SERVERS group
-$WSAServers = Get-ADComputer -filter {( name -like "*") -and ( operatingsystem -like "*server*") } -Properties * #| select -First 20
+$WSAServers = Get-ADComputer -filter {( name -like "*") -and ( OperatingSystem -like "*server*") } -Properties * #| select -First 20
 Write-Host "Servers are in AD - " $WSAServers.count
 $ObjectCount = $WSAServers.count
 
