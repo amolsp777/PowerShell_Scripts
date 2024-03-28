@@ -149,7 +149,7 @@ If (!(test-path $ScriptOutputPath)) { New-Item -ItemType Directory -Force -Path 
 # $ObjectCount = $WSAServers.count
 
 # Get the Windows server list from the WSA-ALL-SERVERS group
-$WSAServers = Get-ADComputer -filter { name -like "*" -and (operatingsystem -like "*server*") } -Properties * #| select -First 20
+$WSAServers = Get-ADComputer -filter {( name -like "*") -and ( operatingsystem -like "*server*") } -Properties * #| select -First 20
 Write-Host "Servers are in AD - " $WSAServers.count
 $ObjectCount = $WSAServers.count
 
@@ -335,7 +335,7 @@ $InventoryBlock = {
 		
 		#region Get last 3 Hotfix details
 		#$Hotfix3 = Get-HotFix -ComputerName $ComputerName | select -Last 1
-		$Hotfix3 = Get-HotFix -ComputerName $sysname | sort InstalledOn -Descending | select -First 1 #Get-HotFix -ComputerName $sysname | sort InstalledOn -Descending | select -First 1
+		$Hotfix3 = Get-HotFix -ComputerName $sysname | Sort-Object InstalledOn -Descending | Select-Object -First 1 #Get-HotFix -ComputerName $sysname | sort InstalledOn -Descending | select -First 1
 		$hotfixID = $Hotfix3.hotfixid -join "`n"
 		$hotfixInstalledON = $Hotfix3.InstalledOn -join "`n"
 		$hotfixInstalledBy = $Hotfix3.InstalledBy -join "`n"
@@ -344,7 +344,7 @@ $InventoryBlock = {
 		
 		#region C Disk details.
 		#Add-WriteHost "[$ADcompName]- Checking Disk Details"
-		$DiskInfo = Get-WmiObject -Class Win32_LogicalDisk -ComputerName $ComputerName | where { $_.DeviceID -like "C:" } |
+		$DiskInfo = Get-WmiObject -Class Win32_LogicalDisk -ComputerName $ComputerName | Where-Object { $_.DeviceID -like "C:" } |
 		Select-Object -Property DeviceID, VolumeName, @{ Label = 'FreeSpace (Gb)'; expression = { ($_.FreeSpace / 1GB).ToString('F2') } },
 		@{ Label = 'Total (Gb)'; expression = { ($_.Size / 1GB).ToString('F2') } },
 		@{ label = 'FreePercent'; expression = { [Math]::Round(($_.freespace / $_.size) * 100, 0) } }
@@ -493,25 +493,25 @@ foreach ($ComputerName in $CompS) {
 		Catch { 0 })
 	
 	$MaxThreads = 50
-	While (@(Get-Job | Where { $_.State -eq "Running" }).Count -ge $MaxThreads) {
+	While (@(Get-Job | Where-Object { $_.State -eq "Running" }).Count -ge $MaxThreads) {
 		Write-Host "Waiting for open thread...($MaxThreads Maximum)"
 		Start-Sleep -Seconds 3
 	}
 	
 	Start-Job -Name "S-$ComputerName" -InputObject $ComputerName -ScriptBlock $InventoryBlock -ArgumentList $ComputerName -ErrorAction SilentlyContinue
 	
-	$JobsStatus = (Get-Job -Name "Srv*" | Where-Object { $_.State -in @("Completed", "Failed").count })
+	# $JobsStatus = (Get-Job -Name "Srv*" | Where-Object { $_.State -in @("Completed", "Failed").count })
 }
 
-While (@(Get-Job | Where { $_.State -eq "Running" }).Count -ne 0) {
+While (@(Get-Job | Where-Object { $_.State -eq "Running" }).Count -ne 0) {
 	Write-Host "Waiting for background jobs..."
-	Get-Job | Where { $_.State -ne "Completed" } #Just showing all the jobs # 
+	Get-Job | Where-Object { $_.State -ne "Completed" } #Just showing all the jobs # 
 	Start-Sleep -Seconds 5
 	# Get-Job | Wait-Job -Timeout 10 
 	$timeout = [timespan]::FromMinutes(10)
 	$now = Get-Date
 	Write-Host "Job running for longer time..going to Stop" -ForegroundColor Red
-	Get-Job | Where {
+	Get-Job | Where-Object {
 		$_.State -eq 'Running' -and
 		(($now - $_.PSBeginTime) -gt $timeout)
 	} | Stop-Job
@@ -522,11 +522,11 @@ Write-host "Processing for Output...." -BackgroundColor Yellow
 $TotalJobs = Get-Job
 
 #region Job Status Count
-$TotalJobsCount = $TotalJobs | select State | Group-Object State | select @{
+$TotalJobsCount = $TotalJobs | Select-Object State | Group-Object State | Select-Object @{
 	Label      = "Job Status"
 	Expression = { if ($_.Name) { $_.Name }
 		else { "[No Type]" } }
-}, @{ N = "Total Count"; E = { $_.count } } | sort 'Total Count' -Descending
+}, @{ N = "Total Count"; E = { $_.count } } | Sort-Object 'Total Count' -Descending
 
 #endregion
 
@@ -536,7 +536,7 @@ $Data = ForEach ($Job in (Get-Job)) {
 	Remove-Job $Job
 }
 
-$TotalJobsCount | ft -AutoSize -Wrap -Property *
+$TotalJobsCount | Format-Table -AutoSize -Wrap -Property *
 
 #region Get the JOB status summary and Update Job status in Text file
 $(Get-Date) | Out-File ($reportsFolderPath + "\JobStatus_$((Get-Date).ToString('MM-dd-yyyy')).txt") -Append
@@ -544,7 +544,7 @@ $TotalJobsCount | Out-File ($reportsFolderPath + "\JobStatus_$((Get-Date).ToStri
 
 If ($TotalJobs.State -eq 'Failed') {
 	
-	$TotalJobs | Where-Object { $_.State -eq 'Failed' } | select State, Name | Out-File ($SCRIPT_PARENT + "\JobStatus_$((Get-Date).ToString('MM-dd-yyyy')).txt") -Append
+	$TotalJobs | Where-Object { $_.State -eq 'Failed' } | Select-Object State, Name | Out-File ($SCRIPT_PARENT + "\JobStatus_$((Get-Date).ToString('MM-dd-yyyy')).txt") -Append
 }
 #endregion
 
@@ -552,7 +552,7 @@ $outputCSV = ($reportsFolderPath + "\JOBs-Server_Inventory_$((Get-Date).ToString
 
 #------ Ope below comment if you need to view output in Command Output
 
-$Data | select * -ExcludeProperty RunspaceId, PSComputerName, PSShowComputerName | Export-Csv -path $outputCSV -NoTypeInformation
+$Data | Select-Object * -ExcludeProperty RunspaceId, PSComputerName, PSShowComputerName | Export-Csv -path $outputCSV -NoTypeInformation
 
 Add-WriteHost "Output file saved at path - $ScriptPath"
 
@@ -564,59 +564,59 @@ $outputfileHTML = ($reportsFolderPath + "\Server_UPTime_$((Get-Date).ToString('M
 #region Data collection for Dashboard
 
 #region UP time 40+ days  # ($importCSVData | where{$_.uptime.trim("Days") -ge "27" })
-$Uptime40UP_List = $importCSVData | where { ($_.uptime -ge "40") } | select ServerName, FQDN, Status, Uptime, 'Hotfix ID', 'Hotfix Intalled ON', 'Hotfix Intalled By', OS_Name, 'ManageEngine', Phy_VM, PatchGroup* | sort uptime -Descending
-$Uptime_List = $importCSVData | select ServerName, FQDN, Status, Uptime, 'Hotfix ID', 'Hotfix Intalled ON', 'Hotfix Intalled By', OS_Name, 'ManageEngine', Phy_VM, PatchGroup* | sort uptime -Descending
+$Uptime40UP_List = $importCSVData | Where-Object { ($_.uptime -ge "40") } | Select-Object ServerName, FQDN, Status, Uptime, 'Hotfix ID', 'Hotfix Intalled ON', 'Hotfix Intalled By', OS_Name, 'ManageEngine', Phy_VM, PatchGroup* | Sort-Object uptime -Descending
+#$Uptime_List = $importCSVData | select ServerName, FQDN, Status, Uptime, 'Hotfix ID', 'Hotfix Intalled ON', 'Hotfix Intalled By', OS_Name, 'ManageEngine', Phy_VM, PatchGroup* | sort uptime -Descending
 #endregion
 
 #region UP time 40+ days  # ($importCSVData | where{$_.uptime.trim("Days") -ge "27" })
-$CDiskAlert_List = $importCSVData | where { (($_.'C-Disk-Free %' -ne "$null") -and ($_.'C-Disk-Free %' -le "12")) } | select * -ExcludeProperty RunspaceId, PSComputerName, PSShowComputerName | sort 'C-Disk-FreeSpace' -Descending
+$CDiskAlert_List = $importCSVData | Where-Object { (($_.'C-Disk-Free %' -ne "$null") -and ($_.'C-Disk-Free %' -le "12")) } | Select-Object * -ExcludeProperty RunspaceId, PSComputerName, PSShowComputerName | Sort-Object 'C-Disk-FreeSpace' -Descending
 #endregion
 
 #region not patch last 30 days
 # $Uptime40UP_List = $importCSVData | where{($_.uptime.trim("Days") -ge "40") | sort uptime  } 
 $less30days = ((Get-Date).AddDays(-30))
-$30DaysHotfixAlert_List = $importCSVData | where { ($_.'Hotfix Intalled ON' -gt "$less30days") } | select * -ExcludeProperty RunspaceId, PSComputerName, PSShowComputerName | sort 'Hotfix Intalled ON' -Descending
+$30DaysHotfixAlert_List = $importCSVData | Where-Object { ($_.'Hotfix Intalled ON' -gt "$less30days") } | Select-Object * -ExcludeProperty RunspaceId, PSComputerName, PSShowComputerName | Sort-Object 'Hotfix Intalled ON' -Descending
 #endregion
 
 
 #region OS Counts
-$OS_Counts_All = $importCSVData | Where-Object { $_.OS_Name -like "*" } | Group-Object OS_Name | select @{
+$OS_Counts_All = $importCSVData | Where-Object { $_.OS_Name -like "*" } | Group-Object OS_Name | Select-Object @{
 	Label      = "Name"
 	Expression = { if ($_.Name) { $_.Name -replace "Microsoft Windows Server ", "" }
 		else { "[No Type]" } }
-}, @{ N = "Total Count"; E = { $_.count } } | sort 'Total Count' -Descending
+}, @{ N = "Total Count"; E = { $_.count } } | Sort-Object 'Total Count' -Descending
 #endregion
 
 
 #region OS Counts ONLINE
-$OS_Counts_Online = $importCSVData | Where-Object { ($_.OS_Name -like "*") -and ($_.status -ne "Failed") } | Group-Object OS_Name | select @{
+$OS_Counts_Online = $importCSVData | Where-Object { ($_.OS_Name -like "*") -and ($_.status -ne "Failed") } | Group-Object OS_Name | Select-Object @{
 	Label      = "Name"
 	Expression = { if ($_.Name) { $_.Name -replace "Microsoft Windows Server ", "" }
 		else { "[No Type]" } }
-}, @{ N = "Total Count"; E = { $_.count } } | sort 'Total Count' -Descending
+}, @{ N = "Total Count"; E = { $_.count } } | Sort-Object 'Total Count' -Descending
 #endregion
 
 #region OS Counts NOT ONLINE
-$OS_Counts_NotOnline = $importCSVData | Where-Object { ($_.OS_Name -like "*") -and ($_.status -ne "Online") } | Group-Object OS_Name | select @{
+$OS_Counts_NotOnline = $importCSVData | Where-Object { ($_.OS_Name -like "*") -and ($_.status -ne "Online") } | Group-Object OS_Name | Select-Object @{
 	Label      = "Name"
 	Expression = { if ($_.Name) { $_.Name -replace "Microsoft Windows Server ", "" }
 		else { "[No Type]" } }
-}, @{ N = "Total Count"; E = { $_.count } } | sort 'Total Count' -Descending
+}, @{ N = "Total Count"; E = { $_.count } } | Sort-Object 'Total Count' -Descending
 #endregion
 
-$BMCAgent_Counts = $importCSVData | Where-Object { $_.'ManageEngine' -like "*" } | Group-Object 'ManageEngine' | select @{
+$BMCAgent_Counts = $importCSVData | Where-Object { $_.'ManageEngine' -like "*" } | Group-Object 'ManageEngine' | Select-Object @{
 	Label      = "Name"
 	Expression = { if ($_.Name) { $_.Name }
 		else { "[No Type]" } }
-}, @{ N = "Total Count"; E = { $_.count } } | sort 'Total Count' -Descending
+}, @{ N = "Total Count"; E = { $_.count } } | Sort-Object 'Total Count' -Descending
 #endregion
 
 #region Server Type Counts Physical/Virtual
-$SrvTypes_Counts = $importCSVData | Where-Object { $_.Phy_VM -like "*" } | Group-Object Phy_VM | select @{
+$SrvTypes_Counts = $importCSVData | Where-Object { $_.Phy_VM -like "*" } | Group-Object Phy_VM | Select-Object @{
 	Label      = "Name"
 	Expression = { if ($_.Name) { $_.Name }
 		else { "[No Type]" } }
-}, @{ N = "Total Count"; E = { $_.count } } | sort 'Total Count' -Descending
+}, @{ N = "Total Count"; E = { $_.count } } | Sort-Object 'Total Count' -Descending
 #endregion
 
 #region Server type with OS count status
@@ -624,7 +624,7 @@ $SrvPhysical = @()
 $SrvVirtual = @()
 
 
-$OSNames = ($importCSVData | select OS_Name -Unique).OS_Name
+$OSNames = ($importCSVData | Select-Object OS_Name -Unique).OS_Name
 for ($i = 0; $i -lt $OSNames.Count; $i++) {
 	$SrvPhysical += ($importCSVData | Where-Object { (($_.OS_Name -eq $OSNames[$i]) -and ($_.Phy_VM -eq "Physical")) }).count
 	$SrvVirtual += ($importCSVData | Where-Object { (($_.OS_Name -eq $OSNames[$i]) -and ($_.Phy_VM -eq "Virtual")) }).count
