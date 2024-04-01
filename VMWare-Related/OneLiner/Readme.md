@@ -1,4 +1,4 @@
-# VMWare - OneLincers
+# VMWare - OneLiners
 
 
 ### Connect vCenter Server
