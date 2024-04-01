@@ -27,13 +27,11 @@ Adding CPU core count in this report.
 
 #========================================================================
 
-
 # Used PSWriteHTML  0.0.71
 # Used Dashimo 0.0.22
 
 # Get Start Time | to get the total elepsed time to complete this script.
 $startMain = (Get-Date)
-
 
 #$servers = Get-Content S:\Get-ServerInventory\Servers.txt
 #region Root directory to save outfile	 <3/8/2017>
@@ -42,7 +40,6 @@ $SCRIPT_PARENT = $PSScriptRoot
 #
 
 #$date = $(Get-Date -Format "yyyy-MM-dd-HHmm")
-
 
 #region Check if the Reports folder exists, and create it if not. And delete .HTML & .CSV files older than 60 days
 
@@ -69,8 +66,6 @@ else {
 }
 
 #endregion Check if the Reports folder exists, and create it if not. And delete .HTML & .CSV files older than 60 days 
-
-
 
 $ErrorActionPreference = "SilentlyContinue"
 
@@ -127,7 +122,6 @@ Function Add-WriteHost {
 	}
 }
 
-
 Add-WriteHost "[Start] Job Started" -Color Yellow
 
 #region Script Path output  and Set the location on SystemDrive
@@ -135,7 +129,6 @@ Add-WriteHost "[Start] Job Started" -Color Yellow
 $ScriptPath = (Split-Path -Path ((Get-Variable -Name MyInvocation).Value).MyCommand.Path)
 #$Mainpath = $ScriptPath #"E:\UserPassChng_Log"
 #$ScriptName = (($MyInvocation.MyCommand.Name) -replace (".ps1", ""))
-
 
 $sysDrive = $env:SystemDrive + "\"
 
@@ -233,16 +226,13 @@ $InventoryBlock = {
 			# return $LogFileName
 		}
 	}
-	
-	
+
 	#endregion 
 	#Add-WriteHost "[$ADcompName]-----------------S>"
 	$ADcompName = "$($ComputerName)"
 	
 	Import-Module ActiveDirectory
-	
-	
-	
+
 	$infoColl = @()
 	
 	Function GetStatusCode {
@@ -275,8 +265,7 @@ $InventoryBlock = {
 	
 	$pingStatus = Test-Connection $ComputerName -Count 1 -ErrorAction SilentlyContinue #| select ResponseTimeToLive,IPV4Address,StatusCode
 	$TTLOS = $pingStatus.ResponseTimeToLive
-	
-	
+
 	#region 	FQDN CHECK	 <3/23/2017>
 	$Uptime = $null
 	#$Resolve = [System.Net.Dns]::Resolve($ServerName) 
@@ -310,8 +299,7 @@ $InventoryBlock = {
 			$phyvm = "Virtual"
 		}
 		else { $phyvm = "Physical" }
-		
-		
+
 		#region Check Host Uptime 
 		Function Get-HostUptime {
 			param ([string]$ComputerName)
@@ -338,8 +326,7 @@ $InventoryBlock = {
 		$hotfixInstalledON = $Hotfix3.InstalledOn -join "`n"
 		$hotfixInstalledBy = $Hotfix3.InstalledBy -join "`n"
 		#endregion
-		
-		
+
 		#region C Disk details.
 		#Add-WriteHost "[$ADcompName]- Checking Disk Details"
 		$DiskInfo = Get-WmiObject -Class Win32_LogicalDisk -ComputerName $ComputerName | Where-Object { $_.DeviceID -like "C:" } |
@@ -348,9 +335,7 @@ $InventoryBlock = {
 		@{ label = 'FreePercent'; expression = { [Math]::Round(($_.freespace / $_.size) * 100, 0) } }
 		
 		#endregion
-		
-		
-		
+
 		#region Ad info
 		#$ADComp = Get-ADComputer -Filter {Name -eq $ComputerName} -Properties  Name,Enabled,OperatingSystem,OperatingSystemVersion,IPv4Address,LastLogonDate,DistinguishedName,MemberOf,whenChanged | Select-Object Name,Enabled,OperatingSystem,OperatingSystemVersion,IPv4Address,LastLogonDate,DistinguishedName,whenChanged,@{n="MemberOfGroup";e={($_.MemberOf -like '*patch*') -replace "(CN=)(.*?),.*",'$2' -join "`n" }},@{n="MemberOf-Count";e={($_.MemberOf -like '*patch*').count}} -Verbose
 		$ADComp = Get-ADComputer $ADcompName -Properties Name, Enabled, OperatingSystem, OperatingSystemVersion, IPv4Address, LastLogonDate, DistinguishedName, MemberOf, whenCreated, whenChanged | Select-Object Name, Enabled, OperatingSystem, OperatingSystemVersion, IPv4Address, LastLogonDate, DistinguishedName, whenCreated, whenChanged, @{ n = "MemberOfGroup"; e = { ($_.MemberOf -like '*patch*') -replace "(CN=)(.*?),.*", '$2' -join "`n" } }, @{ n = "MemberOf-Count"; e = { ($_.MemberOf -like '*patch*').count } }
@@ -405,8 +390,7 @@ $InventoryBlock = {
 		
 		Add-Member -inputObject $infoObject -memberType NoteProperty -name "OS_Name" -value $OSInfo.Caption
 		Add-Member -inputObject $infoObject -memberType NoteProperty -name "OS_Version" -value $OSInfo.Version
-		
-		
+
 		Add-Member -inputObject $infoObject -memberType NoteProperty -Name 'ManageEngine' -Value $ManageEngineStatus
 		Add-Member -inputObject $infoObject -memberType NoteProperty -Name 'Enabled' -Value $ADComp.Enabled
 		Add-Member -inputObject $infoObject -memberType NoteProperty -Name 'OperatingSystem' -Value $ADComp.OperatingSystem
@@ -431,8 +415,7 @@ $InventoryBlock = {
 		#Add-WriteHost "[$ADcompName]-----Output-Loading-----"
 		
 	}
-	
-	
+
 	else {
 		Write-Host "Server not reachable - $($ComputerName)"
 		#Add-WriteHost "[$ADcompName]- Server not reachable"
@@ -455,8 +438,7 @@ $InventoryBlock = {
 		
 		Add-Member -inputObject $infoObject -memberType NoteProperty -name "OS_Name" -value ""
 		Add-Member -inputObject $infoObject -memberType NoteProperty -name "OS_Version" -value ""
-		
-		
+
 		Add-Member -inputObject $infoObject -memberType NoteProperty -Name 'ManageEngine' -Value ""
 		Add-Member -inputObject $infoObject -memberType NoteProperty -Name 'Enabled' -Value ""
 		Add-Member -inputObject $infoObject -memberType NoteProperty -Name 'OperatingSystem' -Value ""
@@ -482,7 +464,6 @@ $InventoryBlock = {
 }
 
 Add-WriteHost "[Objects] Total Devices to check - $count"
-
 
 $i = 0
 foreach ($ComputerName in $CompS) {
@@ -576,7 +557,6 @@ $less30days = ((Get-Date).AddDays(-30))
 $30DaysHotfixAlert_List = $importCSVData | Where-Object { ($_.'Hotfix Intalled ON' -gt "$less30days") } | Select-Object * -ExcludeProperty RunspaceId, PSComputerName, PSShowComputerName | Sort-Object 'Hotfix Intalled ON' -Descending
 #endregion
 
-
 #region OS Counts
 $OS_Counts_All = $importCSVData | Where-Object { $_.OS_Name -like "*" } | Group-Object OS_Name | Select-Object @{
 	Label      = "Name"
@@ -584,7 +564,6 @@ $OS_Counts_All = $importCSVData | Where-Object { $_.OS_Name -like "*" } | Group-
 		else { "[No Type]" } }
 }, @{ N = "Total Count"; E = { $_.count } } | Sort-Object 'Total Count' -Descending
 #endregion
-
 
 #region OS Counts ONLINE
 $OS_Counts_Online = $importCSVData | Where-Object { ($_.OS_Name -like "*") -and ($_.status -ne "Failed") } | Group-Object OS_Name | Select-Object @{
@@ -621,7 +600,6 @@ $SrvTypes_Counts = $importCSVData | Where-Object { $_.Phy_VM -like "*" } | Group
 $SrvPhysical = @()
 $SrvVirtual = @()
 
-
 $OSNames = ($importCSVData | Select-Object OS_Name -Unique).OS_Name
 for ($i = 0; $i -lt $OSNames.Count; $i++) {
 	$SrvPhysical += ($importCSVData | Where-Object { (($_.OS_Name -eq $OSNames[$i]) -and ($_.Phy_VM -eq "Physical")) }).count
@@ -631,7 +609,6 @@ for ($i = 0; $i -lt $OSNames.Count; $i++) {
 #endregion
 
 #endregion Data collection for Dashboard
-
 
 #region Dashboard Code
 Dashboard -Name 'Windows Server Inventory v0.1 @mol' -FilePath $outputfileHTML {
@@ -722,8 +699,7 @@ Dashboard -Name 'Windows Server Inventory v0.1 @mol' -FilePath $outputfileHTML {
 				$D1 = @($SrvPhysical)
 				$D2 = @($SrvVirtual)
 				$DN1 = @($OSNames)
-				
-				
+
 				Chart -Title 'Server Type with OS' -TitleAlignment center {
 					ChartLegend -Name 'Physical', 'Virtual' -Color SeaGreen, IndianRed #CoralRed
 					ChartBarOptions -Type bar -DataLabelsOffsetX 15
@@ -773,13 +749,12 @@ Dashboard -Name 'Windows Server Inventory v0.1 @mol' -FilePath $outputfileHTML {
 
 #endregion HTML Dashboard
 
-Copy-Item $outputfileHTML "P:\InfraWeb\ServerInventory\Home.html" -Force -Verbose   
+Copy-Item $outputfileHTML "C:\ServerInventory\Home.html" -Force -Verbose   
 
 # Get End Time
 $EndMain = (Get-Date)
 $MainElapsedTime = $EndMain - $startMain
 $MainElapsedTimeOut = [Math]::Round(($MainElapsedTime.TotalMinutes), 3)
-
 
 "[Total Elapsed Time] $MainElapsedTimeOut Min. for Objects [$($ObjectCount)]" | Out-File ($SCRIPT_PARENT + "\JobStatus_$((Get-Date).ToString('MM-dd-yyyy')).txt") -Append
 "/\____________________________________________________/\" | Out-File ($SCRIPT_PARENT + "\JobStatus_$((Get-Date).ToString('MM-dd-yyyy')).txt") -Append
@@ -800,7 +775,6 @@ $messageSubject = "Server UP TIME > $(Get-date) "
 $messageBody = $MailText #+  $MailTextT 
 $Attachment = $outputfileHTML # If any attachment then you can define the  $Attachment
 
-
 $mailMessageParameters = @{
 	From	   = $smtpFrom
 	To		   = $smtpTo
@@ -813,5 +787,4 @@ $mailMessageParameters = @{
 Send-MailMessage @mailMessageParameters -BodyAsHtml -Verbose
 Write-Host "Email has been sent..... $(Get-date -format "dd-MMM-yyyy HH:mm:ss")" -ForegroundColor Green
 #>
-
 
