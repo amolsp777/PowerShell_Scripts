@@ -44,7 +44,8 @@ $SCRIPT_PARENT = $PSScriptRoot
 #region Check if the Reports folder exists, and create it if not. And delete .HTML & .CSV files older than 60 days
 
 $reportsFolderPath = Join-Path -Path $PSScriptRoot -ChildPath "Reports"
-if (-not (Test-Path -Path $reportsFolderPath -PathType Container)) {
+if (-not (Test-Path -Path $reportsFolderPath -PathType Container))
+{
 	Write-Host "Reprots folder not found. Creating folder.." -ForegroundColor Yellow
 	New-Item -Path $reportsFolderPath -ItemType Directory
 }
@@ -54,14 +55,17 @@ $oldFiles = Get-ChildItem -Path $reportsFolderPath | Where-Object { $_.Extension
 $oldFiles.count
 
 # Check if old files were found before attempting to delete them
-if ($oldFiles.Count -gt 0) {
+if ($oldFiles.Count -gt 0)
+{
 	# Delete the old CSV and HTML files
-	foreach ($file in $oldFiles) {
+	foreach ($file in $oldFiles)
+	{
 		Remove-Item -Path $file.FullName -Force
 	}
 	Write-Verbose "$($oldFiles.Count) Old CSV and HTML files deleted."
 }
-else {
+else
+{
 	Write-Host "No old CSV and HTML files found."
 }
 
@@ -69,13 +73,14 @@ else {
 
 $ErrorActionPreference = "SilentlyContinue"
 
-Function Add-WriteHost {
+Function Add-WriteHost
+{
 	[CmdletBinding()]
 	Param
 	(
 		[Parameter(Mandatory = $true,
-			ValueFromPipeline = $true,
-			ValueFromPipelineByPropertyName = $true)]
+				   ValueFromPipeline = $true,
+				   ValueFromPipelineByPropertyName = $true)]
 		[ValidateNotNullOrEmpty()]
 		[Alias("LogContent")]
 		[string]$Message,
@@ -94,14 +99,17 @@ Function Add-WriteHost {
 	
 	$LogMessage = "$FormattedDate $LevelText $Message"
 	
-	if ($LogFile) {
+	if ($LogFile)
+	{
 		# Use the specified log file path and append data
 		Add-Content -Path $LogFile -Value $LogMessage -Append
 	}
-	else {
+	else
+	{
 		# Use the current working directory and create a log file with a timestamp
 		$ScriptRoot = $PSScriptRoot
-		if (-not $ScriptRoot) {
+		if (-not $ScriptRoot)
+		{
 			$ScriptRoot = Get-Location
 		}
 		
@@ -109,7 +117,8 @@ Function Add-WriteHost {
 		Add-Content -Path $LogFileName -Value $LogMessage
 	}
 	
-	switch ($Level) {
+	switch ($Level)
+	{
 		'Error' {
 			Write-Host $LogMessage -ForegroundColor Red
 		}
@@ -142,7 +151,7 @@ If (!(test-path $ScriptOutputPath)) { New-Item -ItemType Directory -Force -Path 
 # $ObjectCount = $WSAServers.count
 
 # Get the Windows server list from the WSA-ALL-SERVERS group
-$WSAServers = Get-ADComputer -filter {( name -like "*") -and ( OperatingSystem -like "*server*") } -Properties * #| select -First 20
+$WSAServers = Get-ADComputer -filter { (name -like "*") -and (OperatingSystem -like "*server*") } -Properties * #| select -First 20
 Write-Host "Servers are in AD - " $WSAServers.count
 $ObjectCount = $WSAServers.count
 
@@ -154,7 +163,7 @@ $InventoryBlock = {
 		[Parameter(Mandatory = $false)]
 		[string[]]$ComputerName #= $env:COMPUTERNAME  
 	)
-		
+	
 	# $ErrorActionPreference = "SilentlyContinue"
 	
 	#region Simple Add-WriteHost Function
@@ -164,13 +173,14 @@ $InventoryBlock = {
 	
 	$logpath = $("\\asdwsa002\p$\_Scripts\Server-Status-Report\Reports\Log_$((Get-Date -Format 'yyyyMMdd').ToString()).log")
 	#$logpath = ($reportsFolderPath + "\_Log_$((Get-Date -Format 'yyyyMMdd').ToString()).log")
-	Function Add-WriteHost {
+	Function Add-WriteHost
+	{
 		[CmdletBinding()]
 		Param
 		(
 			[Parameter(Mandatory = $true,
-				ValueFromPipeline = $true,
-				ValueFromPipelineByPropertyName = $true)]
+					   ValueFromPipeline = $true,
+					   ValueFromPipelineByPropertyName = $true)]
 			[ValidateNotNullOrEmpty()]
 			[Alias("LogContent")]
 			[string]$Message,
@@ -184,20 +194,25 @@ $InventoryBlock = {
 			[string]$LogFile = $logpath #"\\files.lanvera.org\Old-Data\LV2PFS02\Users\ep.ap0926" + "\Log_$((Get-Date -Format 'yyyyMMdd').ToString()).log" # Added parameter for specifying the log file path
 		)
 		
-		Begin {
-			if ($LogFile) {
+		Begin
+		{
+			if ($LogFile)
+			{
 				$LogFileName = $LogFile
 			}
-			else {
+			else
+			{
 				$ScriptRoot = $PSScriptRoot
-				if (-not $ScriptRoot) {
+				if (-not $ScriptRoot)
+				{
 					$ScriptRoot = Get-Location
 				}
 				$LogFileName = Join-Path -Path $ScriptRoot -ChildPath "Log_$((Get-Date -Format 'yyyyMMddHHmmss').ToString()).log"
 			}
 		}
 		
-		Process {
+		Process
+		{
 			# Convert the input message to a string using Out-String
 			$Message = ($Message | Out-String).Trim()
 			
@@ -208,7 +223,8 @@ $InventoryBlock = {
 			# Append the formatted message to the log file using Out-File with -Append
 			$LogMessage | Out-File -Append -FilePath $LogFileName
 			
-			switch ($Level) {
+			switch ($Level)
+			{
 				'Error' {
 					Write-Host $LogMessage -ForegroundColor Red
 				}
@@ -221,23 +237,26 @@ $InventoryBlock = {
 			}
 		}
 		
-		End {
+		End
+		{
 			# If you want to return the log file path at the end
 			# return $LogFileName
 		}
 	}
-
+	
 	#endregion 
 	#Add-WriteHost "[$ADcompName]-----------------S>"
 	$ADcompName = "$($ComputerName)"
 	
 	Import-Module ActiveDirectory
-
+	
 	$infoColl = @()
 	
-	Function GetStatusCode {
+	Function GetStatusCode
+	{
 		Param ([int]$StatusCode)
-		switch ($StatusCode) {
+		switch ($StatusCode)
+		{
 			#0 	{"Online"}
 			11001 { "Buffer Too Small" }
 			11002 { "Destination Net Unreachable" }
@@ -265,7 +284,7 @@ $InventoryBlock = {
 	
 	$pingStatus = Test-Connection $ComputerName -Count 1 -ErrorAction SilentlyContinue #| select ResponseTimeToLive,IPV4Address,StatusCode
 	$TTLOS = $pingStatus.ResponseTimeToLive
-
+	
 	#region 	FQDN CHECK	 <3/23/2017>
 	$Uptime = $null
 	#$Resolve = [System.Net.Dns]::Resolve($ServerName) 
@@ -273,7 +292,8 @@ $InventoryBlock = {
 	
 	catch { $Resolve = $null }
 	
-	if ($pingStatus.StatusCode -eq 0) {
+	if ($pingStatus.StatusCode -eq 0)
+	{
 		$PingCode = "Online"
 		#do-Log -Message "[OK]-[$sysname] TTL is - $($TTLOS)."
 		#$FQDN = $FQDN1
@@ -292,16 +312,19 @@ $InventoryBlock = {
 	
 	$DataUpdateTime = Get-Date -Format "MM/dd/yyyy HH:mm"
 	
-	If (($pingStatus.StatusCode -eq 0) -and ($TTLOS -ge 100 -and $TTLOS -le 128 -or $TTLOS -le 0)) {
+	If (($pingStatus.StatusCode -eq 0) -and ($TTLOS -ge 100 -and $TTLOS -le 128 -or $TTLOS -le 0))
+	{
 		#Add-WriteHost "[$ADcompName]- Checking OS & Hotfix Details"
 		$CPUInfoCount = Get-WmiObject -Class Win32_ComputerSystem -ComputerName $ComputerName
-		If (($CPUInfoCount.Manufacturer -like "VM*") -or ($CPUInfoCount.Manufacturer -like "Microsoft*")) {
+		If (($CPUInfoCount.Manufacturer -like "VM*") -or ($CPUInfoCount.Manufacturer -like "Microsoft*"))
+		{
 			$phyvm = "Virtual"
 		}
 		else { $phyvm = "Physical" }
-
+		
 		#region Check Host Uptime 
-		Function Get-HostUptime {
+		Function Get-HostUptime
+		{
 			param ([string]$ComputerName)
 			$Uptime = Get-WmiObject -Class Win32_OperatingSystem -ComputerName $ComputerName
 			$LastBootUpTime = $Uptime.ConvertToDateTime($Uptime.LastBootUpTime)
@@ -326,16 +349,16 @@ $InventoryBlock = {
 		$hotfixInstalledON = $Hotfix3.InstalledOn -join "`n"
 		$hotfixInstalledBy = $Hotfix3.InstalledBy -join "`n"
 		#endregion
-
+		
 		#region C Disk details.
 		#Add-WriteHost "[$ADcompName]- Checking Disk Details"
 		$DiskInfo = Get-WmiObject -Class Win32_LogicalDisk -ComputerName $ComputerName | Where-Object { $_.DeviceID -like "C:" } |
 		Select-Object -Property DeviceID, VolumeName, @{ Label = 'FreeSpace (Gb)'; expression = { ($_.FreeSpace / 1GB).ToString('F2') } },
-		@{ Label = 'Total (Gb)'; expression = { ($_.Size / 1GB).ToString('F2') } },
-		@{ label = 'FreePercent'; expression = { [Math]::Round(($_.freespace / $_.size) * 100, 0) } }
+					  @{ Label = 'Total (Gb)'; expression = { ($_.Size / 1GB).ToString('F2') } },
+					  @{ label = 'FreePercent'; expression = { [Math]::Round(($_.freespace / $_.size) * 100, 0) } }
 		
 		#endregion
-
+		
 		#region Ad info
 		#$ADComp = Get-ADComputer -Filter {Name -eq $ComputerName} -Properties  Name,Enabled,OperatingSystem,OperatingSystemVersion,IPv4Address,LastLogonDate,DistinguishedName,MemberOf,whenChanged | Select-Object Name,Enabled,OperatingSystem,OperatingSystemVersion,IPv4Address,LastLogonDate,DistinguishedName,whenChanged,@{n="MemberOfGroup";e={($_.MemberOf -like '*patch*') -replace "(CN=)(.*?),.*",'$2' -join "`n" }},@{n="MemberOf-Count";e={($_.MemberOf -like '*patch*').count}} -Verbose
 		$ADComp = Get-ADComputer $ADcompName -Properties Name, Enabled, OperatingSystem, OperatingSystemVersion, IPv4Address, LastLogonDate, DistinguishedName, MemberOf, whenCreated, whenChanged | Select-Object Name, Enabled, OperatingSystem, OperatingSystemVersion, IPv4Address, LastLogonDate, DistinguishedName, whenCreated, whenChanged, @{ n = "MemberOfGroup"; e = { ($_.MemberOf -like '*patch*') -replace "(CN=)(.*?),.*", '$2' -join "`n" } }, @{ n = "MemberOf-Count"; e = { ($_.MemberOf -like '*patch*').count } }
@@ -344,23 +367,29 @@ $InventoryBlock = {
 		
 		#region Check ManageEngine UEMS - Agent
 		#Add-WriteHost "[$ADcompName]- Checking Services"
-		try {
+		try
+		{
 			$ManageEngineService = Get-Service -ComputerName $computername -Name 'ManageEngine UEMS - Agent' # | select Status
-			If ($ManageEngineService -ne $null) {
-				If (($ManageEngineService.Status -eq "Running")) {
+			If ($ManageEngineService -ne $null)
+			{
+				If (($ManageEngineService.Status -eq "Running"))
+				{
 					$ManageEngineStatus = "ManageEngine-Running"
 				}
-				Elseif (($ManageEngineService.Status -ne "Running")) {
+				Elseif (($ManageEngineService.Status -ne "Running"))
+				{
 					$ManageEngineStatus = "ManageEngine-Not Running"
 				}
 				
 			}
-			Else {
+			Else
+			{
 				$ManageEngineStatus = "ManageEngine not found"
 			}
 		}
 		
-		catch {
+		catch
+		{
 			$ManageEngineStatus = "Unable to access"
 		}
 		#endregion
@@ -390,7 +419,7 @@ $InventoryBlock = {
 		
 		Add-Member -inputObject $infoObject -memberType NoteProperty -name "OS_Name" -value $OSInfo.Caption
 		Add-Member -inputObject $infoObject -memberType NoteProperty -name "OS_Version" -value $OSInfo.Version
-
+		
 		Add-Member -inputObject $infoObject -memberType NoteProperty -Name 'ManageEngine' -Value $ManageEngineStatus
 		Add-Member -inputObject $infoObject -memberType NoteProperty -Name 'Enabled' -Value $ADComp.Enabled
 		Add-Member -inputObject $infoObject -memberType NoteProperty -Name 'OperatingSystem' -Value $ADComp.OperatingSystem
@@ -415,8 +444,9 @@ $InventoryBlock = {
 		#Add-WriteHost "[$ADcompName]-----Output-Loading-----"
 		
 	}
-
-	else {
+	
+	else
+	{
 		Write-Host "Server not reachable - $($ComputerName)"
 		#Add-WriteHost "[$ADcompName]- Server not reachable"
 		$infoObject = New-Object PSObject
@@ -438,7 +468,7 @@ $InventoryBlock = {
 		
 		Add-Member -inputObject $infoObject -memberType NoteProperty -name "OS_Name" -value ""
 		Add-Member -inputObject $infoObject -memberType NoteProperty -name "OS_Version" -value ""
-
+		
 		Add-Member -inputObject $infoObject -memberType NoteProperty -Name 'ManageEngine' -Value ""
 		Add-Member -inputObject $infoObject -memberType NoteProperty -Name 'Enabled' -Value ""
 		Add-Member -inputObject $infoObject -memberType NoteProperty -Name 'OperatingSystem' -Value ""
@@ -466,13 +496,15 @@ $InventoryBlock = {
 Add-WriteHost "[Objects] Total Devices to check - $count"
 
 $i = 0
-foreach ($ComputerName in $CompS) {
+foreach ($ComputerName in $CompS)
+{
 	$i++
 	Write-Progress -Activity "Running Jobs.." -Status " $i/$($CompS.count)  $ComputerName" -PercentComplete $(Try { $i / ($CompS.count) * 100 }
 		Catch { 0 })
 	
 	$MaxThreads = 50
-	While (@(Get-Job | Where-Object { $_.State -eq "Running" }).Count -ge $MaxThreads) {
+	While (@(Get-Job | Where-Object { $_.State -eq "Running" }).Count -ge $MaxThreads)
+	{
 		Write-Host "Waiting for open thread...($MaxThreads Maximum)"
 		Start-Sleep -Seconds 3
 	}
@@ -482,7 +514,8 @@ foreach ($ComputerName in $CompS) {
 	# $JobsStatus = (Get-Job -Name "Srv*" | Where-Object { $_.State -in @("Completed", "Failed").count })
 }
 
-While (@(Get-Job | Where-Object { $_.State -eq "Running" }).Count -ne 0) {
+While (@(Get-Job | Where-Object { $_.State -eq "Running" }).Count -ne 0)
+{
 	Write-Host "Waiting for background jobs..."
 	Get-Job | Where-Object { $_.State -ne "Completed" } #Just showing all the jobs # 
 	Start-Sleep -Seconds 5
@@ -502,15 +535,18 @@ $TotalJobs = Get-Job
 
 #region Job Status Count
 $TotalJobsCount = $TotalJobs | Select-Object State | Group-Object State | Select-Object @{
-	Label      = "Job Status"
-	Expression = { if ($_.Name) { $_.Name }
-		else { "[No Type]" } }
+	Label	   = "Job Status"
+	Expression = {
+		if ($_.Name) { $_.Name }
+		else { "[No Type]" }
+	}
 }, @{ N = "Total Count"; E = { $_.count } } | Sort-Object 'Total Count' -Descending
 
 #endregion
 
 # Get-Job       #Just showing all the jobs
-$Data = ForEach ($Job in (Get-Job)) {
+$Data = ForEach ($Job in (Get-Job))
+{
 	Receive-Job $Job
 	Remove-Job $Job
 }
@@ -521,7 +557,8 @@ $TotalJobsCount | Format-Table -AutoSize -Wrap -Property *
 $(Get-Date) | Out-File ($reportsFolderPath + "\JobStatus_$((Get-Date).ToString('MM-dd-yyyy')).txt") -Append
 $TotalJobsCount | Out-File ($reportsFolderPath + "\JobStatus_$((Get-Date).ToString('MM-dd-yyyy')).txt") -Append
 
-If ($TotalJobs.State -eq 'Failed') {
+If ($TotalJobs.State -eq 'Failed')
+{
 	
 	$TotalJobs | Where-Object { $_.State -eq 'Failed' } | Select-Object State, Name | Out-File ($SCRIPT_PARENT + "\JobStatus_$((Get-Date).ToString('MM-dd-yyyy')).txt") -Append
 }
@@ -559,40 +596,50 @@ $30DaysHotfixAlert_List = $importCSVData | Where-Object { ($_.'Hotfix Intalled O
 
 #region OS Counts
 $OS_Counts_All = $importCSVData | Where-Object { $_.OS_Name -like "*" } | Group-Object OS_Name | Select-Object @{
-	Label      = "Name"
-	Expression = { if ($_.Name) { $_.Name -replace "Microsoft Windows Server ", "" }
-		else { "[No Type]" } }
+	Label	   = "Name"
+	Expression = {
+		if ($_.Name) { $_.Name -replace "Microsoft Windows Server ", "" }
+		else { "[No Type]" }
+	}
 }, @{ N = "Total Count"; E = { $_.count } } | Sort-Object 'Total Count' -Descending
 #endregion
 
 #region OS Counts ONLINE
 $OS_Counts_Online = $importCSVData | Where-Object { ($_.OS_Name -like "*") -and ($_.status -ne "Failed") } | Group-Object OS_Name | Select-Object @{
-	Label      = "Name"
-	Expression = { if ($_.Name) { $_.Name -replace "Microsoft Windows Server ", "" }
-		else { "[No Type]" } }
+	Label	   = "Name"
+	Expression = {
+		if ($_.Name) { $_.Name -replace "Microsoft Windows Server ", "" }
+		else { "[No Type]" }
+	}
 }, @{ N = "Total Count"; E = { $_.count } } | Sort-Object 'Total Count' -Descending
 #endregion
 
 #region OS Counts NOT ONLINE
 $OS_Counts_NotOnline = $importCSVData | Where-Object { ($_.OS_Name -like "*") -and ($_.status -ne "Online") } | Group-Object OS_Name | Select-Object @{
-	Label      = "Name"
-	Expression = { if ($_.Name) { $_.Name -replace "Microsoft Windows Server ", "" }
-		else { "[No Type]" } }
+	Label	   = "Name"
+	Expression = {
+		if ($_.Name) { $_.Name -replace "Microsoft Windows Server ", "" }
+		else { "[No Type]" }
+	}
 }, @{ N = "Total Count"; E = { $_.count } } | Sort-Object 'Total Count' -Descending
 #endregion
 
 $BMCAgent_Counts = $importCSVData | Where-Object { $_.'ManageEngine' -like "*" } | Group-Object 'ManageEngine' | Select-Object @{
-	Label      = "Name"
-	Expression = { if ($_.Name) { $_.Name }
-		else { "[No Type]" } }
+	Label	   = "Name"
+	Expression = {
+		if ($_.Name) { $_.Name }
+		else { "[No Type]" }
+	}
 }, @{ N = "Total Count"; E = { $_.count } } | Sort-Object 'Total Count' -Descending
 #endregion
 
 #region Server Type Counts Physical/Virtual
 $SrvTypes_Counts = $importCSVData | Where-Object { $_.Phy_VM -like "*" } | Group-Object Phy_VM | Select-Object @{
-	Label      = "Name"
-	Expression = { if ($_.Name) { $_.Name }
-		else { "[No Type]" } }
+	Label	   = "Name"
+	Expression = {
+		if ($_.Name) { $_.Name }
+		else { "[No Type]" }
+	}
 }, @{ N = "Total Count"; E = { $_.count } } | Sort-Object 'Total Count' -Descending
 #endregion
 
@@ -601,7 +648,8 @@ $SrvPhysical = @()
 $SrvVirtual = @()
 
 $OSNames = ($importCSVData | Select-Object OS_Name -Unique).OS_Name
-for ($i = 0; $i -lt $OSNames.Count; $i++) {
+for ($i = 0; $i -lt $OSNames.Count; $i++)
+{
 	$SrvPhysical += ($importCSVData | Where-Object { (($_.OS_Name -eq $OSNames[$i]) -and ($_.Phy_VM -eq "Physical")) }).count
 	$SrvVirtual += ($importCSVData | Where-Object { (($_.OS_Name -eq $OSNames[$i]) -and ($_.Phy_VM -eq "Virtual")) }).count
 }
@@ -621,7 +669,8 @@ Dashboard -Name 'Windows Server Inventory v0.1 @mol' -FilePath $outputfileHTML {
 					
 					ChartBarOptions -Type bar -Distributed
 					ChartLegend -Name 'Total'
-					for ($i = 0; $i -lt $Data1.Count; $i++) {
+					for ($i = 0; $i -lt $Data1.Count; $i++)
+					{
 						ChartBar -Name $DataNames1[$i] -Value $Data1[$i]
 					}
 				}
@@ -634,7 +683,8 @@ Dashboard -Name 'Windows Server Inventory v0.1 @mol' -FilePath $outputfileHTML {
 					
 					ChartBarOptions -Type bar -Distributed
 					ChartLegend -Name 'Total'
-					for ($i = 0; $i -lt $Data1.Count; $i++) {
+					for ($i = 0; $i -lt $Data1.Count; $i++)
+					{
 						ChartBar -Name $DataNames1[$i] -Value $Data1[$i]
 					}
 				}
@@ -647,7 +697,8 @@ Dashboard -Name 'Windows Server Inventory v0.1 @mol' -FilePath $outputfileHTML {
 					
 					ChartBarOptions -Type bar -Distributed
 					ChartLegend -Name 'Total'
-					for ($i = 0; $i -lt $Data1.Count; $i++) {
+					for ($i = 0; $i -lt $Data1.Count; $i++)
+					{
 						ChartBar -Name $DataNames1[$i] -Value $Data1[$i]
 					}
 				}
@@ -661,7 +712,8 @@ Dashboard -Name 'Windows Server Inventory v0.1 @mol' -FilePath $outputfileHTML {
 					
 					ChartBarOptions -Type bar -Distributed
 					ChartLegend -Name 'Total'
-					for ($i = 0; $i -lt $Data1.Count; $i++) {
+					for ($i = 0; $i -lt $Data1.Count; $i++)
+					{
 						ChartBar -Name $DataNames1[$i] -Value $Data1[$i]
 					}
 				}
@@ -685,7 +737,8 @@ Dashboard -Name 'Windows Server Inventory v0.1 @mol' -FilePath $outputfileHTML {
 					
 					ChartBarOptions -Type bar -Distributed
 					ChartLegend -Name 'Total'
-					for ($i = 0; $i -lt $Data1.Count; $i++) {
+					for ($i = 0; $i -lt $Data1.Count; $i++)
+					{
 						ChartBar -Name $DataNames1[$i] -Value $Data1[$i]
 					}
 				}
@@ -699,12 +752,13 @@ Dashboard -Name 'Windows Server Inventory v0.1 @mol' -FilePath $outputfileHTML {
 				$D1 = @($SrvPhysical)
 				$D2 = @($SrvVirtual)
 				$DN1 = @($OSNames)
-
+				
 				Chart -Title 'Server Type with OS' -TitleAlignment center {
 					ChartLegend -Name 'Physical', 'Virtual' -Color SeaGreen, IndianRed #CoralRed
 					ChartBarOptions -Type bar -DataLabelsOffsetX 15
-					for ($i = 0; $i -lt $D1.Count; $i++) {
-						ChartBar -Name $DN1[$i] -Value $D1[$i], $D2[$i] 
+					for ($i = 0; $i -lt $D1.Count; $i++)
+					{
+						ChartBar -Name $DN1[$i] -Value $D1[$i], $D2[$i]
 					}
 				}
 			}
@@ -722,16 +776,16 @@ Dashboard -Name 'Windows Server Inventory v0.1 @mol' -FilePath $outputfileHTML {
 		Table -DataTable $30DaysHotfixAlert_List -PagingOptions 15, 25 -Filtering {
 			#TableConditionalFormatting -Name 'FreeSpacePer' -ComparisonType number -Operator le -Value 15 -Color black -BackgroundColor amber 
 			$less30days = ((Get-Date).AddDays(-30))
-
+			
 			TableConditionalFormatting -Name 'Hotfix Intalled ON' -ComparisonType date -Operator gt -Value $less30days -Color black -BackgroundColor amber
-
+			
 		}
 	}
 	
 	Tab -Name 'C Disk Space Alerts' -IconRegular dot-circle {
 		Table -DataTable $CDiskAlert_List -PagingOptions 15, 25 -Filtering {
 			TableConditionalFormatting -Name 'C-Disk-Free %' -ComparisonType number -Operator le -Value 12 -Color white -BackgroundColor Crimson
-
+			
 		}
 	}
 	
@@ -740,7 +794,7 @@ Dashboard -Name 'Windows Server Inventory v0.1 @mol' -FilePath $outputfileHTML {
 			#TableConditionalFormatting -Name 'FreeSpacePer' -ComparisonType number -Operator le -Value 15 -Color black -BackgroundColor amber 
 			TableConditionalFormatting -Name 'Uptime' -ComparisonType number -Operator ge -Value 50 -Color white -BackgroundColor Crimson
 			TableConditionalFormatting -Name 'C-Disk-Free %' -ComparisonType number -Operator le -Value 12 -Color white -BackgroundColor Crimson
-
+			
 		}
 	}
 }
@@ -749,7 +803,7 @@ Dashboard -Name 'Windows Server Inventory v0.1 @mol' -FilePath $outputfileHTML {
 
 #endregion HTML Dashboard
 
-Copy-Item $outputfileHTML "C:\ServerInventory\Home.html" -Force -Verbose   
+Copy-Item $outputfileHTML "C:\ServerInventory\Home.html" -Force -Verbose
 
 # Get End Time
 $EndMain = (Get-Date)
