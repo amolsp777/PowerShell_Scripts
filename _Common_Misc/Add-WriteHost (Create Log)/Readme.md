@@ -4,6 +4,7 @@
 - [Usage](#usage)
   - [Syntax](#syntax)
   - [Parameters](#parameters)
+  - [Output](#output)
 - [Examples](#examples)
 - [Notes](#notes)
 - [Installation](#installation)
@@ -19,6 +20,7 @@ This PowerShell utility, `Add-WriteHost`, allows you to log messages to a file a
 ```powershell
 Add-WriteHost [-Message] <string> [-Color <string>] [-Level <string>] [-LogFile <string>]
 ```
+
 ### Parameters
 
 - `Message` (Mandatory): The message you want to log and display.
@@ -26,6 +28,14 @@ Add-WriteHost [-Message] <string> [-Color <string>] [-Level <string>] [-LogFile 
 - `Level` (Optional): The log level, which can be "Error," "Warn," or "Info" (default is "Info").
 - `LogFile` (Optional): The path to a log file where messages should be stored. If not provided, the function will create a log file in the current working directory with a timestamp.
 
+
+### Output 
+```
+2023-09-13 16:37:53 [INFO]: Testing
+2023-09-13 16:37:53 [ERROR]: Testing
+2023-09-13 16:37:53 [WARN]: Testing
+2023-09-13 16:37:53 [ERROR]: Error: Something went wrong!
+```
 ## Examples
 ### Example 1
 
