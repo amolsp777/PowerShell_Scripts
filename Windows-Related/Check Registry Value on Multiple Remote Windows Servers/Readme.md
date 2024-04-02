@@ -1,4 +1,4 @@
-# PowerShell Script: Check Registry Value on Multiple Remote Windows Servers
+# Check Registry Value on Multiple Remote Windows Servers
 
 This PowerShell script allows you to check a specific registry value on multiple remote Windows servers. It connects to each server, checks the specified registry key, and retrieves the value if present.
 
