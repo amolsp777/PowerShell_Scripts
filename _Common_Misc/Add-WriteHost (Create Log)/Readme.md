@@ -6,6 +6,7 @@
   - [Parameters](#parameters)
   - [Output](#output)
 - [Examples](#examples)
+  - [Output](#output)
 - [Notes](#notes)
 - [Installation](#installation)
 
@@ -28,14 +29,6 @@ Add-WriteHost [-Message] <string> [-Color <string>] [-Level <string>] [-LogFile 
 - `Level` (Optional): The log level, which can be "Error," "Warn," or "Info" (default is "Info").
 - `LogFile` (Optional): The path to a log file where messages should be stored. If not provided, the function will create a log file in the current working directory with a timestamp.
 
-
-### Output 
-```
-2023-09-13 16:37:53 [INFO]: Testing
-2023-09-13 16:37:53 [ERROR]: Testing
-2023-09-13 16:37:53 [WARN]: Testing
-2023-09-13 16:37:53 [ERROR]: Error: Something went wrong!
-```
 ## Examples
 ### Example 1
 
@@ -66,6 +59,15 @@ This example uses the function with `Get-Service` to log service information. It
 Get-Service | ForEach-Object { "[Service Name: $($_.DisplayName)], [Status: $($_.Status)]" | Add-WriteHost }
 ```
 This example uses the function with `Get-Service` to log service information. It retrieves a list of services and logs each service's name and status to a log file in the current working directory, displaying them on the console in white.
+
+### Output 
+```
+2023-09-13 16:37:53 [INFO]: Testing
+2023-09-13 16:37:53 [ERROR]: Testing
+2023-09-13 16:37:53 [WARN]: Testing
+2023-09-13 16:37:53 [ERROR]: Error: Something went wrong!
+```
+
 ## Notes
 - This utility provides you with the flexibility to customize log messages, colors, and log file locations.
 - It is a useful tool for scripters and system administrators to enhance the readability and management of logs during PowerShell scripting and automation tasks.
