@@ -1,6 +1,19 @@
 # Get-ADObjectCounts
 
-This script is a PowerShell function that retrieves various counts of Active Directory objects such as users, computers, and groups from a specified domain controller. It utilizes Active Directory cmdlets to gather the required information.
+The ```Get-ADObjectCounts``` script retrieves various counts related to Active Directory (AD) objects, such as users, computers, and groups. It can be useful for administrators managing AD environments. Let’s break down what this script does:
+
+## Purpose
+The purpose of this script is to provide an overview of the following AD object counts:
+
+- Active Users: Number of enabled user accounts.
+- Disabled Users: Number of disabled user accounts.
+- Total Computers: Total count of computer objects.
+- Active Computers: Number of enabled computer accounts.
+- Disabled Computers: Number of disabled computer accounts.
+- Total Groups: Total count of AD groups.
+- Empty Groups: Number of AD groups with no members.
+- Security Groups: Number of security groups.
+- Distribution Groups: Number of distribution groups.
 
 ## Parameters
 
@@ -53,3 +66,7 @@ TotalComputers     1000
 DisabledComputers  50
 TotalGroups        80
 ```
+
+## Notes
+- Make sure you have appropriate permissions to query AD objects.
+- Modify the ```$domainController``` parameter if you want to specify a different domain controller.
