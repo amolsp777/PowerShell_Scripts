@@ -43,13 +43,13 @@ Sample Ouptup as List
 ```markdown
 Name               Value
 ----               -----
-DisabledUsers      168
-DistributionGroups 100
-SecurityGroups     1469
-ActiveUsers        932
-EmptyGroups        397
-ActiveComputers    645
-TotalComputers     748
-DisabledComputers  103
-TotalGroups        1569
+DisabledUsers      200
+DistributionGroups 40
+SecurityGroups     40
+ActiveUsers        1500
+EmptyGroups        5
+ActiveComputers    950
+TotalComputers     1000
+DisabledComputers  50
+TotalGroups        80
 ```
