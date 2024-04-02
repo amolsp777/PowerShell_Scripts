@@ -41,6 +41,19 @@ The function returns a hashtable containing counts for different types of Active
 ## Example 
 
 ```powershell
+<#	
+	.NOTES
+	===========================================================================
+     Created on:   	4/2/2024 12:04 PM
+	 Created by:   	Amol Patil
+	 Organization: 	
+	 Filename:     	Get-ADObjectCounts.ps1
+	===========================================================================
+	.DESCRIPTION
+		This script is a PowerShell function that retrieves various counts of Active Directory objects such as users, computers, and groups from a specified domain controller. 
+        It utilizes Active Directory cmdlets to gather the required information.
+#>
+
 $result = Get-ADObjectCounts
 $result | Format-Table -AutoSize
 ```
