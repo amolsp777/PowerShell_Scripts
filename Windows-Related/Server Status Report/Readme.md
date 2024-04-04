@@ -24,13 +24,13 @@ Module Author - [Evotec](https://github.com/EvotecIT/PSWriteHTML)
 
 Below code will check If the machine is pinging and it will the take TTL value from machine's Ping response and validate Is its Virtual Or Physical using WMI Class ```Get-WmiObject -Class Win32_ComputerSystem``` and get the Manufacturer value.
 ```powershell
-	If (($pingStatus.StatusCode -eq 0) -and ($TTLOS -ge 100 -and $TTLOS -le 128 -or $TTLOS -le 0)) {
-		#Add-WriteHost "[$ADcompName]- Checking OS & Hotfix Details"
-		$CPUInfoCount = Get-WmiObject -Class Win32_ComputerSystem -ComputerName $ComputerName
-		If (($CPUInfoCount.Manufacturer -like "VM*") -or ($CPUInfoCount.Manufacturer -like "Microsoft*")) {
-			$phyvm = "Virtual"
-		}
-		else { $phyvm = "Physical" }
+If (($pingStatus.StatusCode -eq 0) -and ($TTLOS -ge 100 -and $TTLOS -le 128 -or $TTLOS -le 0)) {
+	#Add-WriteHost "[$ADcompName]- Checking OS & Hotfix Details"
+	$CPUInfoCount = Get-WmiObject -Class Win32_ComputerSystem -ComputerName $ComputerName
+	If (($CPUInfoCount.Manufacturer -like "VM*") -or ($CPUInfoCount.Manufacturer -like "Microsoft*")) {
+		$phyvm = "Virtual"
+	}
+	else { $phyvm = "Physical" }
 ```
 
 
