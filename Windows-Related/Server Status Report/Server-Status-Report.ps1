@@ -162,7 +162,7 @@ $InventoryBlock = {
 	
 	$i++
 	
-	$logpath = $("\\asdwsa002\p$\_Scripts\Server-Status-Report\Reports\Log_$((Get-Date -Format 'yyyyMMdd').ToString()).log")
+	$logpath = $("C:\_Scripts\Server-Status-Report\Reports\Log_$((Get-Date -Format 'yyyyMMdd').ToString()).log")
 	#$logpath = ($reportsFolderPath + "\_Log_$((Get-Date -Format 'yyyyMMdd').ToString()).log")
 	Function Add-WriteHost {
 		[CmdletBinding()]
@@ -181,7 +181,7 @@ $InventoryBlock = {
 			[ValidateSet("Error", "Warn", "Info")]
 			[string]$Level = "Info",
 			[Parameter(Mandatory = $false)]
-			[string]$LogFile = $logpath #"\\files.lanvera.org\Old-Data\LV2PFS02\Users\ep.ap0926" + "\Log_$((Get-Date -Format 'yyyyMMdd').ToString()).log" # Added parameter for specifying the log file path
+			[string]$LogFile = $logpath 
 		)
 		
 		Begin {
