@@ -1,0 +1,6 @@
+ServerName,Environment
+SQL4,Non-Prod
+SQL5,Non-Prod
+SQL1,UAT
+SQL2,UAT
+SQL3,Non-Prod
