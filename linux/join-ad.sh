@@ -9,10 +9,9 @@ AD_PASSWORD=$3
 sudo apt-get update
 sudo apt-get install -y realmd sssd adcli krb5-user packagekit
 
-# Join the AD domain
-echo $AD_PASSWORD | realm join --user=$AD_USER $AD_DOMAIN
-
 # Enable and start necessary services
 sudo systemctl enable sssd
 sudo systemctl start sssd
 
+# Join the AD domain
+echo $AD_PASSWORD | sudo realm join --user=$AD_USER $AD_DOMAIN
