@@ -17,3 +17,4 @@ sudo systemctl start sssd
 
 # Join the AD domain
 echo $AD_PASSWORD | sudo realm join --user=$AD_USER $AD_DOMAIN
+realm list
