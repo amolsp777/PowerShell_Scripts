@@ -18,7 +18,7 @@ sudo systemctl enable sssd
 sudo systemctl start sssd
 
 # Join the AD domain
-echo $AD_PASSWORD | sudo realm join --user=$AD_USER $AD_DOMAIN --computer $AD_OU
+echo $AD_PASSWORD | sudo realm join --user=$AD_USER $AD_DOMAIN --computer-ou $AD_OU
 
 # list out realm details.
 realm list
