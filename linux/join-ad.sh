@@ -4,7 +4,8 @@
 AD_DOMAIN=$1
 AD_USER=$2
 AD_PASSWORD=$3
-AD_GROUP=$4
+AD_OU=$4
+AD_GROUP=$5
 
 # Install required packages
 sudo apt-get update
@@ -17,7 +18,7 @@ sudo systemctl enable sssd
 sudo systemctl start sssd
 
 # Join the AD domain
-echo $AD_PASSWORD | sudo realm join --user=$AD_USER $AD_DOMAIN
+echo $AD_PASSWORD | sudo realm join --user=$AD_USER $AD_DOMAIN --computer=$AD_OU
 
 # list out realm details.
 realm list
