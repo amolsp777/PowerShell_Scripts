@@ -39,4 +39,3 @@ echo "-------------------- Restarting SSSD service --------------------"
 systemctl restart sssd 
 
 echo "-------------------- JOIN AD Script Completed --------------------"
-echo "------------------------------------------------------------------"
