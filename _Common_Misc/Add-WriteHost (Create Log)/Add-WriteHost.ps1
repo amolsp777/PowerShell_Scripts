@@ -44,34 +44,33 @@
 
 #>
 
+#region Simple Add-WriteHost Function
+# It will write notmal time based logs on the screen
 Function Add-WriteHost {
-    [CmdletBinding()] 
-    Param 
-    ( 
-        [Parameter(Mandatory = $true, 
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Mandatory = $true,
             ValueFromPipeline = $true,
-            ValueFromPipelineByPropertyName = $true)] 
-        [ValidateNotNullOrEmpty()] 
-        [Alias("LogContent")] 
-        [string]$Message, 
-
-        [Parameter(Mandatory = $false)] 
-        [ValidateSet("Red", "Yellow", "Green")] 
-        [string]$Color = "White",
-
-        [Parameter(Mandatory = $false)] 
-        [ValidateSet("Error", "Warn", "Info")] 
-        [string]$Level = "Info",
-
+            ValueFromPipelineByPropertyName = $true)]
+        [ValidateNotNullOrEmpty()]
+        [Alias("LogContent")]
+        [string]$Message,
         [Parameter(Mandatory = $false)]
-        [string]$LogFile  # Added parameter for specifying the log file path
+        [ValidateSet("Red", "Yellow", "Green")]
+        [string]$Color = "White",
+        [Parameter(Mandatory = $false)]
+        [ValidateSet("Error", "Warn", "Info")]
+        [string]$Level = "Info",
+        [Parameter(Mandatory = $false)]
+        [string]$LogFile # Added parameter for specifying the log file path
     )
-
+	
     $FormattedDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $LevelText = '[' + $Level.ToUpper() + ']' + ':'
-
+	
     $LogMessage = "$FormattedDate $LevelText $Message"
-
+	
     if ($LogFile) {
         # Use the specified log file path and append data
         Add-Content -Path $LogFile -Value $LogMessage -Append
@@ -82,24 +81,24 @@ Function Add-WriteHost {
         if (-not $ScriptRoot) {
             $ScriptRoot = Get-Location
         }
-        
+		
         $LogFileName = Join-Path -Path $ScriptRoot -ChildPath "Log_$((Get-Date -Format 'yyyyMMdd').ToString()).log"
         Add-Content -Path $LogFileName -Value $LogMessage
     }
-
-    switch ($Level) { 
+	
+    switch ($Level) {
         'Error' {
             Write-Host $LogMessage -ForegroundColor Red
-        } 
-        'Warn' { 
+        }
+        'Warn' {
             Write-Host $LogMessage -ForegroundColor Yellow
-        } 
-        'Info' { 
+        }
+        'Info' {
             Write-Host $LogMessage -ForegroundColor $Color
-        } 
-    } 
+        }
+    }
 }
-
+#endregion
 
 Add-WriteHost -Message "Testing" -Level Info 
 Add-WriteHost -Message "Testing" -Level Error
