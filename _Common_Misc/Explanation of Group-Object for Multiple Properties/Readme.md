@@ -47,7 +47,9 @@ This script groups employees by their department and job title and calculates th
 #### Other PowerShell Script example
 ```powershell
 # Group by ZoneName and RecordType, then count the records
-$groupedData = $csvData | Group-Object -Property ZoneName, RecordType | Select-Object @{Name="ZoneName";Expression={$_.Group[0].ZoneName}}, @{Name="RecordType";Expression={$_.Group[0].RecordType}}, Count
+$groupedData = $csvData | Group-Object -Property ZoneName, RecordType |`
+    Select-Object @{Name="ZoneName";Expression={$_.Group[0].ZoneName}}, 
+    @{Name="RecordType";Expression={$_.Group[0].RecordType}}, Count
 ```
 ### Example Output
 
