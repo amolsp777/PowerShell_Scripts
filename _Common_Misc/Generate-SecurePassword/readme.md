@@ -14,7 +14,7 @@ function Generate-SecurePassword {
     $lowercase = 'abcdefghijklmnopqrstuvwxyz'
     $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     $digits = '1234567890'
-    $special = '!*_'
+    $special = '!^=_-'
     $characters = $lowercase + $uppercase + $digits + $special
     $password = ""
 
