@@ -2,7 +2,7 @@
 #$serverInstances = Import-Csv -Path "serverlist.csv"
 
 #region Define the SQL Server instances
-$serverInstances = Import-Csv -Path ($PSScriptRoot + "\SQLserverlist.csv") #| select -First 5 #"MCN111","ABC","DBP111"
+$serverInstances = Import-Csv -Path ($PSScriptRoot + "\SQLserverlist.csv") #| select -First 5 
 Write-Host "Totatl count - $($serverInstances.count)"
 #endregion Define the SQL Server instances
 

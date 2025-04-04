@@ -6,7 +6,7 @@
     The Add-WriteHost function accepts log messages and provides flexibility in logging and displaying them. It allows you to specify the log file path or use the current working directory for logging. Log messages can be displayed in different colors based on the log level (Error, Warn, Info).
 
 .PARAMETER Message
-    The message you want to log and display.
+    The message you want to log in and display.
 
 .PARAMETER Color
     The text color for displaying the message on the console (default is "White").
@@ -45,7 +45,7 @@
 #>
 
 #region Simple Add-WriteHost Function
-# It will write notmal time based logs on the screen
+# It will write normal time based logs on the screen
 Function Add-WriteHost {
     [CmdletBinding()]
     Param
