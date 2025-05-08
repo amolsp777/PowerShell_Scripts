@@ -45,7 +45,7 @@
 #>
 
 #region Simple Add-WriteHost Function
-# It will write normal time based logs on the screen
+# It will write normal time-based logs on the screen
 Function Add-WriteHost {
     [CmdletBinding()]
     Param
@@ -77,12 +77,18 @@ Function Add-WriteHost {
     }
     else {
         # Use the current working directory and create a log file with a timestamp
+        $LogPath = Join-Path $PSScriptRoot Logs
+if (-not (Test-path $LogPath)) {
+    $null = New-Item -ItemType Directory -Path $LogPath -Force
+    Write-Host "Path created $($ReportPath)" -ForegroundColor Yellow
+}
+
         $ScriptRoot = $PSScriptRoot
         if (-not $ScriptRoot) {
             $ScriptRoot = Get-Location
         }
 		
-        $LogFileName = Join-Path -Path $ScriptRoot -ChildPath "Log_$((Get-Date -Format 'yyyyMMdd').ToString()).log"
+        $LogFileName = Join-Path -Path $LogPath -ChildPath "Log_$((Get-Date -Format 'yyyyMMdd').ToString()).log"
         Add-Content -Path $LogFileName -Value $LogMessage
     }
 	
