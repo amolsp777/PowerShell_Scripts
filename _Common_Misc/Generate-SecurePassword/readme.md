@@ -2,11 +2,12 @@
 
 `Generate-SecurePassword` is a PowerShell function designed to create a secure, random password. The generated password includes at least one lowercase letter, one uppercase letter, one digit, and one special character, ensuring a high level of security.
 
-`Generate securepassowrd usign powershell`, `get secure password powershell`, `amolp`
+`Generate securepassword using powershell`, `get secure password powershell`, `amolp`
 
 ## Function Definition
 
 ```powershell
+#region Generate-SecurePassword
 function Generate-SecurePassword {
     param (
         [int]$passwordLength = 64
@@ -37,6 +38,7 @@ function Generate-SecurePassword {
 
     return $password
 }
+#endregion Generate-SecurePassword
 ``` 
 ## Usage
 - To use the `Generate-SecurePassword` function, follow these steps:
