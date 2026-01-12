@@ -1,5 +1,4 @@
-# Get-ADGroupMember_NoRecursive_count.ps1
-
+# Get AD GroupMember NoRecursive counts
 ## Overview
 
 A comprehensive PowerShell script for analyzing Active Directory groups and generating detailed statistics and reports. This script retrieves **direct (non-recursive) members** from AD groups and creates an interactive HTML dashboard with extensive analytics.
