@@ -249,6 +249,31 @@ Import-Module PSWriteHTML
 
 ---
 
+## Sample Screenshots
+
+The following screenshots provide visual examples of the dashboard output:
+
+### Dashboard Overview
+
+![Dashboard Section 1](Sample_snapshots/Dashboard_1.png)
+*Key Metrics and Group Summary Charts*
+
+![Dashboard Section 2](Sample_snapshots/Dashboard_2.png)
+*Top Groups Analysis and Group Age Analysis*
+
+![Dashboard Section 3](Sample_snapshots/Dashboard_3.png)
+*Groups by Scope/Category and Organizational Unit Analysis*
+
+![Dashboard Section 4](Sample_snapshots/Dashboard_4.png)
+*Members Summary and Recent Activity*
+
+### AD Groups List
+
+![AD Groups List](Sample_snapshots/Ad_group_list.png)
+*Complete filterable list of all processed groups with all properties*
+
+---
+
 ## CSV Output Columns
 
 | Column | Description |
