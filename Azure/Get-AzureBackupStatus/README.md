@@ -1,23 +1,33 @@
-# Get-AzureBackupStatus.ps1
+<p align="center">
+  <img src="https://img.shields.io/badge/PowerShell-5.1%2B%20%7C%207%2B-5391FE?style=flat-square&logo=powershell&logoColor=white" alt="PowerShell" />
+  <img src="https://img.shields.io/badge/Azure-CLI-0078D4?style=flat-square&logo=microsoft-azure&logoColor=white" alt="Azure CLI" />
+  <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=flat-square" alt="Platform" />
+</p>
 
-A PowerShell script that lists **all Azure Backup–enabled resources** and their status across Recovery Services vaults and Backup vaults (Data Protection). It reports protection status, last backup time (in Central US time), retention, when backup data expires, and whether soft delete is enabled.
+# 📋 Get Azure Backup Status
 
-Use it for reporting, audits, or to quickly see what is protected and when it will be deleted.
+> A PowerShell script that lists **all Azure Backup–enabled resources** and their status across Recovery Services vaults and Backup vaults (Data Protection).
+
+It reports protection status, last backup time (in Central US time), retention, when backup data expires, and whether soft delete is enabled — ideal for **reporting**, **audits**, or quickly seeing what is protected and when it will be deleted.
 
 ---
 
-## What it does
+## ✨ What it does
 
-- **Recovery Services vaults**  
-  Lists backup items for:
-  - **Azure VMs** (OS and data disks)
-  - **Azure File shares** (Azure Files)
+### 🏥 Recovery Services vaults
 
-- **Backup vaults (Data Protection)**  
-  Lists backup instances for:
-  - **Azure Blob storage** (operational / point-in-time restore)
+| Resource | Description |
+|----------|-------------|
+| 🖥️ **Azure VMs** | OS and data disks |
+| 📁 **Azure File shares** | Azure Files |
 
-For each item you get:
+### 🗄️ Backup vaults (Data Protection)
+
+| Resource | Description |
+|----------|-------------|
+| 📦 **Azure Blob storage** | Operational / point-in-time restore (PITR) |
+
+### 📊 Output columns
 
 | Column | Description |
 |--------|-------------|
@@ -35,42 +45,46 @@ For each item you get:
 
 ---
 
-## Prerequisites
+## 🔧 Prerequisites
 
-- **PowerShell** 5.1 or PowerShell 7+ (Windows, macOS, or Linux).
-- **Azure CLI** (`az`) installed and logged in:
+- ✅ **PowerShell** 5.1 or PowerShell 7+ (Windows, macOS, or Linux)
+- ✅ **Azure CLI** (`az`) installed and logged in:
+
   ```bash
   az login
   ```
+
   Optional: set the subscription to use:
+
   ```bash
   az account set --subscription "Your Subscription Name"
   ```
-- **Permissions**: Your account must be able to read backup vaults and backup items (e.g. **Reader** or **Backup Reader** on the vaults and resource groups).
+
+- ✅ **Permissions**: Your account must be able to read backup vaults and backup items (e.g. **Reader** or **Backup Reader** on the vaults and resource groups).
 
 ---
 
-## Usage
+## 🚀 Usage
 
-### Basic (current subscription, all vaults)
+### ▶️ Basic (current subscription, all vaults)
 
 ```powershell
 .\Get-AzureBackupStatus.ps1
 ```
 
-### Limit to a resource group
+### 📂 Limit to a resource group
 
 ```powershell
 .\Get-AzureBackupStatus.ps1 -ResourceGroup "my-backup-rg"
 ```
 
-### Export results to CSV
+### 📤 Export results to CSV
 
 ```powershell
 .\Get-AzureBackupStatus.ps1 -ExportCsv ".\backup-report.csv"
 ```
 
-### Limit to specific vault(s)
+### 🔒 Limit to specific vault(s)
 
 ```powershell
 # Only Recovery Services vault "my-rsv"
@@ -80,19 +94,19 @@ For each item you get:
 .\Get-AzureBackupStatus.ps1 -BackupVaultName "my-bv"
 ```
 
-### Use a specific subscription
+### 🆔 Use a specific subscription
 
 ```powershell
 .\Get-AzureBackupStatus.ps1 -SubscriptionId "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
 
-### Quiet output (table only, no progress lines)
+### 🔇 Quiet output (table only, no progress lines)
 
 ```powershell
 .\Get-AzureBackupStatus.ps1 -Quiet
 ```
 
-### Get help
+### ❓ Get help
 
 ```powershell
 Get-Help .\Get-AzureBackupStatus.ps1 -Full
@@ -100,7 +114,7 @@ Get-Help .\Get-AzureBackupStatus.ps1 -Full
 
 ---
 
-## Parameters
+## 📑 Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -113,28 +127,18 @@ Get-Help .\Get-AzureBackupStatus.ps1 -Full
 
 ---
 
-## Notes
+## 📌 Notes
 
-- **Dates and times**  
-  All displayed backup and expiry times are in **Central (US)** time (CST/CDT).
-
-- **Blob backup**  
-  Blob operational backup uses **point-in-time restore (PITR)**. There are no discrete backup jobs, so:
-  - **LastBackupTime** shows `N/A (continuous PITR)`.
-  - **ExpiresOrDeleteBy** shows `N/A (PITR)`.
-  - **Retention** still comes from the backup policy (e.g. "30 days").
-
-- **Soft delete**  
-  - **Recovery Services**: From vault backup properties (`softDeleteFeatureState`, retention in days when available).
-  - **Backup vault (Data Protection)**: From vault security settings (`softDeleteSettings`).
-  Values are shown as **Enabled (N days)** or **Disabled** (or **AlwaysOn** where applicable).
-
-- **Azure CLI**  
-  The script calls Azure CLI. If you see a one-time message about a preview extension (e.g. for `dataprotection`), you can ignore it; the script still runs.
+| Topic | Details |
+|-------|---------|
+| 🕐 **Dates and times** | All displayed backup and expiry times are in **Central (US)** time (CST/CDT). |
+| 📦 **Blob backup** | Blob operational backup uses **point-in-time restore (PITR)**. There are no discrete backup jobs, so **LastBackupTime** shows `N/A (continuous PITR)`, **ExpiresOrDeleteBy** shows `N/A (PITR)`, and **Retention** still comes from the policy (e.g. "30 days"). |
+| 🗑️ **Soft delete** | **Recovery Services**: from vault backup properties. **Backup vault (Data Protection)**: from vault security settings. Shown as **Enabled (N days)** or **Disabled** (or **AlwaysOn** where applicable). |
+| ⚠️ **Azure CLI** | The script calls Azure CLI. A one-time message about a preview extension (e.g. `dataprotection`) can be ignored; the script still runs. |
 
 ---
 
-## Example output
+## 📄 Example output
 
 ```
 Subscription: My Subscription (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
@@ -157,8 +161,8 @@ Total items: 2
 
 ---
 
-## License and disclaimer
+## 📜 License and disclaimer
 
-This script is provided as-is for reporting and operational visibility over Azure Backup. It only **reads** backup metadata via Azure CLI; it does not create, modify, or delete any Azure resources. Use it in accordance with your organization’s security and compliance policies.
+This script is provided **as-is** for reporting and operational visibility over Azure Backup. It only **reads** backup metadata via Azure CLI; it does not create, modify, or delete any Azure resources. Use it in accordance with your organization's security and compliance policies.
 
 You can share and adapt the script; if you redistribute it, keeping this README (or equivalent documentation) with the script is recommended.
